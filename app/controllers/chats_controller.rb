@@ -1,12 +1,8 @@
  class ChatsController < ApplicationController
   require 'string_image_uploader'
-	
-	def new
-		@chat = Chat.new
-	end
 
 	def create
-		params[:chat][:creator_id] = @current_user.id
+		params[:chat][:user_id] = @current_user
 		@chat = Chat.create(chat_params)
 		area = @chat.inside_area?('L2')
 		if area.any?
@@ -15,7 +11,7 @@
 		end
 		@chat.save
 		render json: @chat.build_chat_hash
-		# $redis.lpush "users:#{@chat.id.to_s}", @chat.creator_id.to_s
+		# $redis.lpush "users:#{@chat.id.to_s}", @chat.user_id.to_s
 
 	end
 
@@ -28,19 +24,19 @@
 		render json: @chats.map(&:build_chat_hash)
 	end
 
-	def list_local_chats
-		area_chats = @current_user.inside_an_area?(params[:location].split(",").map(&:to_f))
+	def list_local_chats # Gotta find out to use without the area table
+		# area_chats = User.inside_an_area?(params[:location].split(",").map(&:to_f))
 		@chats = []
-		if area_chats.first && area_chats.last.level == "L2"
-			@chats << area_chats.last.chats
-		end
+		# if area_chats.first && area_chats.last.level == "L2"
+		# 	@chats << area_chats.last.chats
+		# end
 			@chats << Chat.includes(:messages).where(
 				location: {
 					"$geoWithin" => {
 						"$centerSphere": [params[:location].split(",").map(&:to_f), 15/3963.2]
 					}
 				},
-				:creator_id.nin => [@current_user.id],
+				:user_id.nin => [@current_user],
 				:area => nil
 			).to_a
 		respond_with @chats.flatten.map(&:build_chat_hash) if @chats
@@ -64,10 +60,10 @@
 	private
 
 	def chat_params
-		the_params = params.require(:chat).permit(:area_id, :creator_id, :title, :chat_type, :location, :cover)# , { users: [] }
+		the_params = params.require(:chat).permit(:area_id, :user_id, :title, :chat_type, :location, :cover)# , { users: [] }
 		the_params[:cover] = StringImageUploader.new(the_params[:cover], 'chat').parse_image_data if the_params[:cover]
 		the_params[:location] = params[:chat][:location] if params[:chat][:location]
-		the_params[:creator_id] = params[:chat][:creator_id] if params[:chat][:creator_id]
+		the_params[:user_id] = params[:chat][:user_id] if params[:chat][:user_id]
 		the_params
 	end
 end

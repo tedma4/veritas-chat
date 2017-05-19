@@ -1,9 +1,5 @@
 class MessagesController < ApplicationController
   require 'string_image_uploader'
-	
-	def new
-		@message = Message.new
-	end
 
 	def create
 		@message = Message.create(message_params)

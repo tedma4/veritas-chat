@@ -14,14 +14,14 @@ class ApplicationController < ActionController::API
   end
 
   def jwt_token(user)
-    # ex: {data: {id: "tedma4@email.com"}}
+    # ex: {data: {user_id: "1234567890987654321"}}
     JsonWebToken.encode(user)
   end
 
   def valid_session?(claims)
-    session = JsonWebToken.decode claims
+    session = claims[:data][:user_id]
     if session
-      return session[:data][:session_id] # Need to update to become the current user_id
+      return session # Need to update to become the current user_id
     else
       return false
     end
