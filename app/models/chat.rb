@@ -5,9 +5,11 @@ class Chat
 	mount_uploader :cover, AttachmentUploader
   # associations
 	has_many :messages, dependent: :destroy
+  has_and_belongs_to_many :joined_chats, class_name: 'JoinedChat', index: true, inverse_of: :chats
+  belongs_to :individual_list, class_name: 'JoinedChat', index: true, inverse_of: :grouped_lists
 	# chat fields
-	field :area_id, index: true
-	field :user_id, index: true
+	field :area_id, type: String
+	field :user_id, type: String
 	field :title, type: String
 	field :chat_type, type: String, default: "private" # "private", "geo", "user"
 	field :location, type: Point, sphere: true
@@ -16,7 +18,10 @@ class Chat
   # validates_presence_of :cover
   delegate :url, :size, :path, to: :cover
   field :cover, type: String#, null: false
+  # Indexes
+  index({area_id: 1, user_id: 1})
 
+  # validates_uniqueness_of :joined_chat
 	# Favorites are a future thing
 	# Users can have many favorite Chats
 	# Many Users can favorite the same chat

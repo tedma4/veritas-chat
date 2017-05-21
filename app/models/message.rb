@@ -7,7 +7,7 @@ class Message
 	belongs_to :chat, index: true
 	# has_one :notification
 	# Fields
-	field :user_id, index: true
+	field :user_id, type: String
 	field :message_type, type: String, default: "text" # "notification", "post", 
 	field :text, type: String
 	field :location, type: Point, sphere: true
@@ -16,6 +16,9 @@ class Message
   # validates_presence_of :content
   delegate :url, :size, :path, to: :content
   field :content, type: String#, null: false
+
+  # Indexes
+  index({user_id: 1})
 
 	# after_create { MessageJob.perform_later(self) }
 	# Future fields, idk what they are yet
