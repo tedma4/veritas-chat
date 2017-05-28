@@ -61,8 +61,11 @@ mess = Message.new
 	mess.content = ImageString.image_file
 mess.save
 
-
-
+joined = JoinedChat.new
+	joined.chats = Chat.all.sample.id
+	user_id = ["5856d773c2382f415081e8cd", "585716f4c29163000406ff86", "58574fd110ded40004c956dc"].sample
+	joined.user_id = user_id
+joined.save
 
 
 
