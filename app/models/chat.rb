@@ -47,11 +47,22 @@ class Chat
 	end
 
 	def inside_area?(level)
-		area = Area.where(
-		  area_profile: {"$geoIntersects" => {"$geometry"=> {type: "Point",coordinates: [self.location.x, self.location.y] }}},
-		  level: level
-		)
-    area
+		client = Mongo::Client.new(ENV['VERITAS-LOCATION-DB'])
+		collection = client[:areas]
+		area = collection.find( 
+			{ "$and": [
+				{"area_profile": 
+					{"$geoIntersects" => 
+						{"$geometry" => {type: "Point", coordinates: [self.location.x, self.location.y]}}}},
+				{"level": level}
+			]
+		})
+		area.to_a
+		# area = Area.where(
+		#   area_profile: {"$geoIntersects" => {"$geometry"=> {type: "Point",coordinates: [self.location.x, self.location.y] }}},
+		#   level: level
+		# )
+  #   area
 	end
 end
 

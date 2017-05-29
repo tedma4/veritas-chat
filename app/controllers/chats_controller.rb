@@ -15,15 +15,6 @@
 
 	end
 
-	def index
-		if params[:chat_list]
-			@chats = Chat.includes(:messages).where(:id.in => params[:chat_list])
-		else
-			@chats = Chat.all 
-		end
-		render json: @chats.map(&:build_chat_hash)
-	end
-
 	def list_local_chats # Gotta find out to use without the area table
 		# area_chats = User.inside_an_area?(params[:location].split(",").map(&:to_f))
 		@chats = []
@@ -39,8 +30,9 @@
 				:user_id.nin => [@current_user],
 				:area => nil
 			).to_a
-		respond_with @chats.flatten.map(&:build_chat_hash) if @chats
-
+		if @chats
+			render json: @chats.flatten.map(&:build_chat_hash) 
+		end
 		# $redis.smembers "users:#{chats.first.id}"
 		# @area = Area.where(
 		# 	area_profil: {

@@ -2,7 +2,7 @@ class JoinedChatsController < ApplicationController
 	def index # the list of a users currently joined chats
 		joined = JoinedChat.where(user_id: @current_user).first
 		chats = joined.chats
-		respond_with chats.map(&:build_chat_hash)
+		render json: chats.map(&:build_chat_hash)
 	end
 
 	def create

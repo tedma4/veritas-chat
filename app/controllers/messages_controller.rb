@@ -2,7 +2,11 @@ class MessagesController < ApplicationController
   require 'string_image_uploader'
 
 	def create
+		params[:message][:user_id] = @current_user
 		@message = Message.create(message_params)
+		if @message.content && !@message.content.blank?
+			@message.message_type = "image"
+		end
 		if @message.save
 			if @message.content && !@message.content.blank?
 				chat = @message.chat 
@@ -19,7 +23,7 @@ class MessagesController < ApplicationController
 	def index
 		@chat = Chat.find(params[:chat_id])
 		@messages = @chat.messages.limit(10)
-		respond_with @messages.map(&:build_message_hash	)
+		render json: @messages.map(&:build_message_hash)
 	end
 
 	private
