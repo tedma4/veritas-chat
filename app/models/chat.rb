@@ -6,7 +6,7 @@ class Chat
   # associations
 	has_many :messages, dependent: :destroy
   has_and_belongs_to_many :joined_chats, class_name: 'JoinedChat', index: true, inverse_of: :chats
-  belongs_to :individual_list, class_name: 'JoinedChat', index: true, inverse_of: :grouped_lists
+  # belongs_to :individual_list, class_name: 'JoinedChat', index: true, inverse_of: :grouped_lists, optional: true
 	# chat fields
 	field :area_id, type: String
 	field :user_id, type: String
@@ -20,7 +20,7 @@ class Chat
   field :cover, type: String#, null: false
   # Indexes
   index({area_id: 1, user_id: 1})
-
+  validates_presence_of :title, :user_id, :location, on: :create
   # validates_uniqueness_of :joined_chat
 	# Favorites are a future thing
 	# Users can have many favorite Chats
@@ -35,7 +35,8 @@ class Chat
 			# status: self.status
 		}
 		chat[:title] = self.title if self.title
-		chat[:cover] = self.cover.url if self.title
+		chat[:normal_cover] = self.cover.url if self.title
+		chat[:thumb_cover] = self.cover.thumb.url if self.title
 		# chat[:area] = self.area_id.to_s if self.area_id
 		# chat[:user] = {id: user.id.to_s, user_name: user.user_name, avatar: user.avatar.url } if self.user
 		unless self.messages.blank?

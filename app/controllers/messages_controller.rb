@@ -1,5 +1,6 @@
 class MessagesController < ApplicationController
   require 'string_image_uploader'
+  before_action :ensure_params_exist
 
 	def create
 		params[:message][:user_id] = @current_user
@@ -34,5 +35,11 @@ class MessagesController < ApplicationController
 		the_params[:location] = params[:message][:location] if params[:message][:location]
 		the_params
 	end
+
+  def ensure_params_exist
+    if message_params[:text].blank? && message_params[:content].blank?
+       render json: {error: "Requires Text/Content"}, status: 400
+    end
+  end
 
 end

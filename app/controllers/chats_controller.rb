@@ -4,13 +4,20 @@
 	def create
 		params[:chat][:user_id] = @current_user
 		@chat = Chat.create(chat_params)
-		area = @chat.inside_area?('L2')
-		if area.any?
-			@chat.area_id = area.first.id
-			@chat.chat_type = "AreaChat"
+		# area = @chat.inside_area?('L2')
+		# if area.any?
+		# 	@chat.area_id = area.first.id
+		# 	@chat.chat_type = "AreaChat"
+		# end
+		
+		if @chat.save
+			joined = JoinedChat.find_or_create_by(user_id: @current_user)
+			joined.chat_ids << @chat.id
+			joined.save
+			render json: @chat.build_chat_hash
+		else
+			render json: @chat.errors, status: 401
 		end
-		@chat.save
-		render json: @chat.build_chat_hash
 		# $redis.lpush "users:#{@chat.id.to_s}", @chat.user_id.to_s
 
 	end
