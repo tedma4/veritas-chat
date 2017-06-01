@@ -37,7 +37,7 @@ class Chat
 		chat[:title] = self.title if self.title
 		chat[:normal_cover] = self.cover.url if self.title
 		chat[:thumb_cover] = self.cover.thumb.url if self.title
-		# chat[:area] = self.area_id.to_s if self.area_id
+		chat[:area_id] = self.area_id if self.area_id
 		# chat[:user] = {id: user.id.to_s, user_name: user.user_name, avatar: user.avatar.url } if self.user
 		unless self.messages.blank?
 			chat[:last_message] = self.messages.last.build_message_hash[:text]
@@ -47,17 +47,22 @@ class Chat
 		chat
 	end
 
-	def inside_area?(level)
+	def self.inside_area(level, coordx, coordy)
 		client = Mongo::Client.new(ENV['VERITAS-LOCATION-DB'])
 		collection = client[:areas]
 		area = collection.find( 
-			{ "$and": [
-				{"area_profile": 
-					{"$geoIntersects" => 
-						{"$geometry" => {type: "Point", coordinates: [self.location.x, self.location.y]}}}},
-				{"level": level}
-			]
-		})
+			{ "$and": 
+				[
+					{"area_profile": 
+						{"$geoIntersects" => 
+							{"$geometry" => {type: "Point", coordinates: [coordx, coordy]}
+							}
+						}
+					},
+					{level: level }
+				]
+			}
+		)
 		area.to_a
 		# area = Area.where(
 		#   area_profile: {"$geoIntersects" => {"$geometry"=> {type: "Point",coordinates: [self.location.x, self.location.y] }}},

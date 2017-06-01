@@ -4,11 +4,11 @@
 	def create
 		params[:chat][:user_id] = @current_user
 		@chat = Chat.create(chat_params)
-		# area = @chat.inside_area?('L2')
-		# if area.any?
-		# 	@chat.area_id = area.first.id
-		# 	@chat.chat_type = "AreaChat"
-		# end
+		area = Chat.inside_area('L2', @chat.location.x, @chat.location.y)
+		if area.any?
+			@chat.area_id = area[0]["_id"].to_s
+			@chat.chat_type = "AreaChat"
+		end
 		
 		if @chat.save
 			joined = JoinedChat.find_or_create_by(user_id: @current_user)
@@ -22,41 +22,30 @@
 
 	end
 
-	def list_local_chats # Gotta find out to use without the area table
-		# area_chats = User.inside_an_area?(params[:location].split(",").map(&:to_f))
-		@chats = []
-		# if area_chats.first && area_chats.last.level == "L2"
-		# 	@chats << area_chats.last.chats
-		# end
-			@chats << Chat.includes(:messages).where(
-				location: {
-					"$geoWithin" => {
-						"$centerSphere": [params[:location].split(",").map(&:to_f), 15/3963.2]
-					}
-				},
-				:user_id.nin => [@current_user],
-				:area => nil
-			).to_a
+	def list_local_chats 
+		loc = params[:location].split(",").map(&:to_f)
+		area = Chat.inside_area("L2", loc.first, loc.last)
+		@chats = Chat.includes(:messages).where( chat_query_builder(loc, area) )
+		user_ids = @chats.pluck(:user_id).uniq
 		if @chats
-			render json: @chats.flatten.map(&:build_chat_hash) 
+			render json: @chats.map(&:build_chat_hash) 
 		end
-		# $redis.smembers "users:#{chats.first.id}"
-		# @area = Area.where(
-		# 	area_profil: {
-		# 		"$goeIntersects" => {
-		# 			"$geometry" => {
-		# 				type: "Point",
-		# 				coordinates: [params[:coords].last, params[:coords].first]
-		# 			}
-		# 		}
-		# 	},
-		# 	:level.nin => ["L0"],
-		# 	:level.in => ["L1", "L2"]
-		# 	)
-		# @area.chats
 	end
 
 	private
+
+	def chat_query_builder(loc, area)
+		chat = {
+			location: {
+				"$geoWithin" => {
+					"$centerSphere": [loc, 15/3963.2]
+				}
+			},
+			:user_id.nin => [@current_user]
+		}
+		chat[:area_id] = area.any? ? area[0]["_id"].to_s : nil
+		chat
+	end
 
 	def chat_params
 		the_params = params.require(:chat).permit(:area_id, :user_id, :title, :chat_type, :location, :cover)# , { users: [] }

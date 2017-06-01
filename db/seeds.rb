@@ -74,6 +74,24 @@ POST "/v1/messages"
 
 
 
+# coordinates here "-112.07474560000003,33.5055259"
+# coordinates here [-112.07474560000003,33.5055259]
+
+
+
+
+def get_user_info(list)
+	require 'net/http'
+	Net::HTTP.get(ENV["VERITAS-USER-SERVER"] + "/users?user_ids=#{list}")
+end
+
+
+
+
+
+
+
+
 
 
 
