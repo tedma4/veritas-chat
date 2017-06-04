@@ -1,10 +1,11 @@
 class Report
 	include Mongoid::Document
   include Mongoid::Timestamps
-	belongs_to :message, index: true
+	belongs_to :message, index: true, optional: true
+	belongs_to :chat, index: true, optional: true
 	field :reporter_id, type: String
 	field :reason, type: String
-	validates_presence_of :message_id, :user_id, :reason
+	validates_presence_of :user_id, :reason
 	index({user_id: 1})
 
 	def build_report_hash
