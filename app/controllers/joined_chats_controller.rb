@@ -3,7 +3,16 @@ class JoinedChatsController < ApplicationController
 	def index # the list of a users currently joined chats
 		@joined = JoinedChat.find_or_create_by(user_id: @current_user)
 		if chats = @joined.chats and !chats.blank?
-			render json: chats.map(&:build_chat_hash)
+			user_ids = chats.pluck(:user_id).uniq
+			users = Chat.get_user_data user_ids
+			chats = chats.map { |c| 
+				c_hash = c.build_chat_hash
+				found = users.find {|u| u[:"#{c.user_id}"] }
+				c_hash[:user] = found ? found[:"#{c.user_id}"] : ""
+				c_hash
+			}
+			# render json: chats.map(&:build_chat_hash)
+			render json: chats
 		elsif chats.blank?
 			render json: {empty: []}, status: 200
 		else

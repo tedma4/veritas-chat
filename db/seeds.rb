@@ -19,7 +19,7 @@ def faker_title
 end
 
 
-10.times do 
+1000.times do 
 	chat = Chat.new
 		# The coordinates of a box drawn inside AZ 
 		lat = Random.rand(32.26855544621476..36.98500309285596)

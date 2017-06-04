@@ -1,6 +1,6 @@
 class MessagesController < ApplicationController
   require 'string_image_uploader'
-  before_action :ensure_params_exist
+  before_action :ensure_params_exist,  only: :create
 
 	def create
 		params[:message][:user_id] = @current_user
@@ -23,8 +23,16 @@ class MessagesController < ApplicationController
 
 	def index
 		@chat = Chat.find(params[:chat_id])
-		@messages = @chat.messages.limit(10)
-		render json: @messages.map(&:build_message_hash)
+		@messages = @chat.messages.order_by(timestamp: :desc).limit(50)
+		user_ids = @messages.pluck(:user_id).uniq
+		users = Chat.get_user_data user_ids
+		@messages = @messages.map {|m| 
+			m_hash = m.build_message_hash
+			found = users.find {|u| u[:"#{m.user_id}"] }
+			m_hash[:user] = found ? found[:"#{m.user_id}"] : ""
+			m_hash
+		}
+		render json: @messages
 	end
 
 	private

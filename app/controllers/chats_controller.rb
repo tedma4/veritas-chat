@@ -14,7 +14,11 @@
 			joined = JoinedChat.find_or_create_by(user_id: @current_user)
 			joined.chat_ids << @chat.id
 			joined.save
-			render json: @chat.build_chat_hash
+			user_data = Chat.get_user_data [@chat.user_id]
+			@chat = @chat.build_chat_hash
+			@chat[:user] = user_data[:"#{c[:user_id]}"] if user_data.count == 1
+			# render json: @chat.build_chat_hash
+			render json: @chat
 		else
 			render json: @chat.errors, status: 401
 		end
@@ -25,25 +29,32 @@
 	def list_local_chats 
 		loc = params[:location].split(",").map(&:to_f)
 		area = Chat.inside_area("L2", loc.first, loc.last)
-		@chats = Chat.includes(:messages).where( chat_query_builder(loc, area) )
-		user_ids = @chats.pluck(:user_id).uniq
+		if area.any?
+			area_id = area[0]["_id"].to_s
+			@chats = Chat.includes(:messages).or( chat_query_builder(loc), { :area_id => area_id } )
+		else
+			@chats = Chat.includes(:messages).where( chat_query_builder(loc) )
+		end
 		if @chats
-			render json: @chats.map(&:build_chat_hash) 
+			user_ids = @chats.pluck(:user_id).uniq
+			users = Chat.get_user_data user_ids
+			@chats = @chats.map {|c| 
+				c_hash = c.build_chat_hash
+				found = users.find {|u| u[:"#{c.user_id}"] }
+				c_hash[:user] = found ? found[:"#{c.user_id}"] : ""
+				c_hash
+			}
+			render json: @chats
 		end
 	end
 
 	private
 
-	def chat_query_builder(loc, area)
+	def chat_query_builder(loc)
 		chat = {
-			location: {
-				"$geoWithin" => {
-					"$centerSphere": [loc, 15/3963.2]
-				}
-			},
-			:user_id.nin => [@current_user]
+			location: { "$geoWithin" => { "$centerSphere": [loc, 15/3963.2] } },
+			:user_id.ne => @current_user
 		}
-		chat[:area_id] = area.any? ? area[0]["_id"].to_s : nil
 		chat
 	end
 
