@@ -10,6 +10,7 @@ class ReportsController < ApplicationController
 	end
 
 	private
+	
 	def report_params
 		params.require(:report).permit(:message_id, :user_id, :reason)
 	end

@@ -10,7 +10,7 @@ class Report
 	def build_report_hash
 		report = {
 			id: self.id,
-			reason:
+			reason: self.reason
 		}
 		# need to make the user project bridge thing
 		report[:user] = self.user_id
