@@ -1,6 +1,6 @@
 class Report
-	include Mongoid::Documents
-	include Mongoid::TimeStamps
+	include Mongoid::Document
+  include Mongoid::Timestamps
 	belongs_to :message, index: true
 	field :reporter_id, type: String
 	field :reason, type: String
