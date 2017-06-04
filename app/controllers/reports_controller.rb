@@ -1,4 +1,4 @@
-class ReportsController < Applicationontroller
+class ReportsController < ApplicationController
 
 	def create
 		@report = Report.new(report_params)
