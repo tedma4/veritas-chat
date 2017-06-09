@@ -16,7 +16,7 @@
 			joined.save
 			user_data = Chat.get_user_data [@chat.user_id]
 			@chat = @chat.build_chat_hash
-			@chat[:user] = user_data[:"#{c[:user_id]}"] if user_data.count == 1
+			@chat[:creator] = user_data[:"#{c[:user_id]}"] if user_data.count == 1
 			# render json: @chat.build_chat_hash
 			render json: @chat
 		else
@@ -41,7 +41,7 @@
 			@chats = @chats.map {|c| 
 				c_hash = c.build_chat_hash
 				found = users.find {|u| u[:"#{c.user_id}"] }
-				c_hash[:user] = found ? found[:"#{c.user_id}"] : ""
+				c_hash[:creator] = found ? found[:"#{c.user_id}"] : ""
 				c_hash
 			}
 			render json: @chats
