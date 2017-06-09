@@ -16,7 +16,6 @@
 			joined.save
 			user_data = Chat.get_user_data [@chat.user_id]
 			@chat = @chat.build_chat_hash
-			binding.pry
 			@chat[:creator] = user_data[0][:"#{@chat[:user_id]}"] if user_data.count == 1
 			# render json: @chat.build_chat_hash
 			render json: @chat
