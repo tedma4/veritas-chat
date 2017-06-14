@@ -36,6 +36,17 @@ class AttachmentUploader < CarrierWave::Uploader::Base
   version :thumb do
     process resize_to_fit: [150, 1500000]
   end
+  
+  version :brightened do 
+	  process :make_brighter
+  end
+
+  def make_brighter
+	  manipulate! do |image|
+		  image.brightness_contrast("27x0")
+		  image = yield(image) if block_given?
+	  end
+  end
 
   # Add a white list of extensions which are allowed to be uploaded.
   # For posts you might use something like this:
