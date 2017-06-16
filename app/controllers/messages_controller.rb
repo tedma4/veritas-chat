@@ -14,7 +14,10 @@ class MessagesController < ApplicationController
 				chat.cover = @message.content
 				chat.save
 			end
-			render json: @message.build_message_hash
+			user_data = Chat.get_user_data [@message.user_id]
+			@message = @message.build_message_hash
+			@message[:user] = user_data[0][:"#{@message[:user_id]}"] if user_data.count == 1
+			render json: @message
 		else
 			render json: @message.errors, status: :unprocessable_entity
 		end
