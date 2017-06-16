@@ -62,7 +62,7 @@
 		the_params = params.require(:chat).permit(:area_id, :user_id, :title, :chat_type, :location, :cover)# , { users: [] }
 		the_params[:cover] = StringImageUploader.new(the_params[:cover], 'chat').parse_image_data if the_params[:cover]
 		the_params[:location] = params[:chat][:location] if params[:chat][:location]
-		the_params[:user_id] = params[:chat][:user_id] if params[:chat][:user_id]
+		# the_params[:user_id] = params[:chat][:user_id] if params[:chat][:user_id]
 		the_params
 	end
 end
