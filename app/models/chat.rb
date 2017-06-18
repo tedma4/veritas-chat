@@ -35,8 +35,9 @@ class Chat
 			# status: self.status
 		}
 		chat[:title] = self.title if self.title
-		chat[:normal_cover] = self.cover.url if self.title
-		chat[:thumb_cover] = self.cover.thumb.url if self.title
+		chat[:normal_cover] = self.cover.url if self.cover
+		chat[:thumb_cover] = self.cover.thumb.url if self.cover
+		chat[:darkened_cover] = self.cover.darkened.url if self.cover
 		chat[:area_id] = self.area_id if self.area_id
 		chat[:user_id] = self.user_id if self.user_id
 		# chat[:user] = {id: user.id.to_s, user_name: user.user_name, avatar: user.avatar.url } if self.user

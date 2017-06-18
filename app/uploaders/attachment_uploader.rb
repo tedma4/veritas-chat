@@ -37,11 +37,11 @@ class AttachmentUploader < CarrierWave::Uploader::Base
     process resize_to_fit: [150, 1500000]
   end
   
-  version :brightened do 
-	  process :make_brighter
+  version :darkened do 
+	  process :make_darker
   end
 
-  def make_brighter
+  def make_darker
 	  manipulate! do |image|
 		  image.brightness_contrast("-12x0")
 		  image = yield(image) if block_given?
