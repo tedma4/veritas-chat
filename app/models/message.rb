@@ -30,7 +30,8 @@ class Message
 		}
 			message[:chat_id] = self.chat_id.to_s if self.chat_id
 			message[:text] = self.text || ''
-			message[:content] = self.content.url || ''
+			message[:normal_content] = self.content.url if self.content
+			message[:thumb_content] = self.content.thumb.url if self.content
 			message
 	end
 end
