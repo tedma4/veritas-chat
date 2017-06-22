@@ -37,7 +37,7 @@ class AttachmentUploader < CarrierWave::Uploader::Base
     process resize_to_fit: [150, 1500000]
   end
   
-  version :darkened do 
+  version :darkened, :if => :cover? do 
 	  process :make_darker
   end
 
@@ -62,5 +62,11 @@ class AttachmentUploader < CarrierWave::Uploader::Base
   # end
   def download_url(filename)
     url(response_content_disposition: %Q{attachment; filename="#{filename}"})
+  end
+
+  protected
+
+  def cover?(file)
+    @mounted_as == :cover
   end
 end
