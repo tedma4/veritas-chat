@@ -43,7 +43,7 @@ class AttachmentUploader < CarrierWave::Uploader::Base
 
   def make_darker
 	  manipulate! do |image|
-		  image.brightness_contrast("-18x0")
+		  image.brightness_contrast("-15x-15")
 		  image = yield(image) if block_given?
       image
 	  end
