@@ -57,9 +57,10 @@ class AttachmentUploader < CarrierWave::Uploader::Base
 
   # Override the filename of the uploaded files:
   # Avoid using model.id.to_s or version_name here, see uploader/store.rb for details.
-  # def filename
-  #   "something.jpg" if original_filename
-  # end
+  def filename
+    "something.jpg" if original_filename
+  end
+  
   def download_url(filename)
     url(response_content_disposition: %Q{attachment; filename="#{filename}"})
   end
