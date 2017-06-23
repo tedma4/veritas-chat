@@ -31,7 +31,8 @@ class Chat
 		# user = self.user_id
 		chat = {
 			id: self.id.to_s,
-			chat_type: self.chat_type
+			chat_type: self.chat_type,
+			created_at: self.created_at
 			# status: self.status
 		}
 		chat[:title] = self.title if self.title
@@ -42,9 +43,12 @@ class Chat
 		chat[:user_id] = self.user_id if self.user_id
 		# chat[:user] = {id: user.id.to_s, user_name: user.user_name, avatar: user.avatar.url } if self.user
 		unless self.messages.blank?
-			chat[:last_message] = self.messages.last.build_message_hash[:text]
+			messages = self.messages
+			chat[:last_message] = messages.last.build_message_hash[:text]
+			chat[:message_count] = messages.count
 		else
 			chat[:last_message] = ""
+			chat[:message_count] = 0
 		end
 		chat
 	end

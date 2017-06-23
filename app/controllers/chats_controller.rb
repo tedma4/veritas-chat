@@ -44,7 +44,7 @@
 				c_hash[:creator] = found ? found[:"#{c.user_id}"] : ""
 				c_hash
 			}
-			render json: @chats
+			render json: @chats.sort_by {|c| -c[:message_count]}
 		end
 	end
 
