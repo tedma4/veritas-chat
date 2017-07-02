@@ -1,6 +1,22 @@
  class ChatsController < ApplicationController
   require 'string_image_uploader'
 
+  def index
+  	@chats = Chat.includes(:messages).all
+		if @chats
+			user_ids = @chats.pluck(:user_id).uniq
+			users = Chat.get_user_data user_ids
+			@chats = @chats.map {|c| 
+				c_hash = c.build_chat_hash
+				found = users.find {|u| u[:"#{c.user_id}"] }
+				c_hash[:creator] = found ? found[:"#{c.user_id}"] : ""
+				c_hash
+			}
+			render json: @chats.sort_by {|c| -c[:message_count]}
+		end
+
+  end
+
 	def create
 		params[:chat][:user_id] = @current_user
 		@chat = Chat.create(chat_params)
