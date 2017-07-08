@@ -26,7 +26,11 @@ class MessagesController < ApplicationController
 
 	def index
 		@chat = Chat.find(params[:chat_id])
-		@messages = @chat.messages.order_by(timestamp: :desc).limit(50)
+		if params[:timestamp]
+			@messages = @chat.messages.where(:timestamp.gt => params[:timestamp].to_datetime ).order_by(timestamp: :desc).limit(50)
+		else
+			@messages = @chat.messages.order_by(timestamp: :desc).limit(50)
+		end
 		user_ids = @messages.pluck(:user_id).uniq
 		users = Chat.get_user_data user_ids
 		@messages = @messages.map {|m| 
