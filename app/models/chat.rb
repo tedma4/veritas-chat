@@ -35,6 +35,7 @@ class Chat
 			created_at: self.created_at
 			# status: self.status
 		}
+		chat[:location] = self.location if self.location
 		chat[:title] = self.title if self.title
 		chat[:normal_cover] = self.cover.url if self.cover
 		chat[:thumb_cover] = self.cover.thumb.url if self.cover
