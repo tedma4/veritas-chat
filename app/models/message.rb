@@ -26,7 +26,8 @@ class Message
 		message = {
 			id: self.id.to_s,
 			message_type: self.message_type,
-			user_id: self.user_id
+			user_id: self.user_id,
+			timestamp: self.timestamp
 		}
 			message[:chat_id] = self.chat_id.to_s if self.chat_id
 			message[:text] = self.text || ''
