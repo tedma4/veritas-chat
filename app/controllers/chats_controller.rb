@@ -25,7 +25,7 @@
 			@chat.area_id = area[0]["_id"].to_s
 			@chat.chat_type = "AreaChat"
 		end
-		if hashtags = @chat.has_tags
+		if hashtags = @chat.has_tags?
 			tag = Hashtag.new
 			tag.chat_id = @chat.id
 			tag.tags = hashtags.flatten
