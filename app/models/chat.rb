@@ -22,8 +22,9 @@ class Chat
 
   field :name, type: String
   field :address, type: String
+  field :description, type: String
   field :types, type: String
-  
+
   # Indexes
   index({area_id: 1, user_id: 1})
   validates_presence_of :title, :user_id, :location, on: :create
@@ -103,7 +104,7 @@ class Chat
 	end
 
 	def has_tags?
-		if self.desciption and tags = self.description.scan(/(?:\s|^)(?:#(?!(?:\d+|\w+?_|_\w+?)(?:\s|$)))(\w+)(?=\s|$)/i) and tags.any?
+		if self.description and tags = self.description.scan(/(?:\s|^)(?:#(?!(?:\d+|\w+?_|_\w+?)(?:\s|$)))(\w+)(?=\s|$)/i) and tags.any?
 			tags
 		else
 			false
