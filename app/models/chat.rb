@@ -5,6 +5,7 @@ class Chat
 	mount_uploader :cover, AttachmentUploader
   # associations
 	has_many :messages, dependent: :destroy
+  has_many :hashtags, dependent: :destroy
   has_and_belongs_to_many :joined_chats, class_name: 'JoinedChat', index: true, inverse_of: :chats
   # belongs_to :individual_list, class_name: 'JoinedChat', index: true, inverse_of: :grouped_lists, optional: true
 	# chat fields
@@ -18,6 +19,11 @@ class Chat
   # validates_presence_of :cover
   delegate :url, :size, :path, to: :cover
   field :cover, type: String#, null: false
+
+  field :name, type: String
+  field :address, type: String
+  field :types, type: String
+  
   # Indexes
   index({area_id: 1, user_id: 1})
   validates_presence_of :title, :user_id, :location, on: :create
@@ -45,7 +51,8 @@ class Chat
 		# chat[:user] = {id: user.id.to_s, user_name: user.user_name, avatar: user.avatar.url } if self.user
 		unless self.messages.blank?
 			messages = self.messages
-			chat[:last_message] = messages.last.build_message_hash[:text]
+			last_message = messages.last
+			chat[:last_message] = last_message.build_message_hash
 			chat[:message_count] = messages.count
 		else
 			chat[:last_message] = ""
@@ -93,6 +100,14 @@ class Chat
 			# {"#{user[:id]}": user}
 		end
 		user_arr
+	end
+
+	def has_tags?
+		if self.desciption and tags = self.description.scan(/(?:\s|^)(?:#(?!(?:\d+|\w+?_|_\w+?)(?:\s|$)))(\w+)(?=\s|$)/i) and tags.any?
+			tags
+		else
+			false
+		end
 	end
 
 # This is for getting a single user's data

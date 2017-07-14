@@ -25,7 +25,12 @@
 			@chat.area_id = area[0]["_id"].to_s
 			@chat.chat_type = "AreaChat"
 		end
-		
+		if hashtags = @chat.has_tags
+			tag = Hashtag.new
+			tag.chat_id = @chat.id
+			tag.tags = hashtags.flatten
+			tag.save
+		end
 		if @chat.save
 			joined = JoinedChat.find_or_create_by(user_id: @current_user)
 			joined.chat_ids << @chat.id
