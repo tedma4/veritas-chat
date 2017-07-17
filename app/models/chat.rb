@@ -118,11 +118,11 @@ class Chat
     require 'fcm'
     fcm = FCM.new(ENV['fcm_api_key']) # an api key from prerequisites
     registration_ids = Device.where(device_type: "android", :user_id.ne => @current_user ).pluck(:registration_id) # an array of one or more client registration IDs
-    options = {
-      data: data,
-      collapse_key: collapse_key || 'my_app'
-    }
-    response = fcm.send(registration_ids, options)
+    # options = {
+    #   data: data,
+    #   collapse_key: collapse_key || 'my_app'
+    # }
+    response = fcm.send(registration_ids, data)
   end  
 
   # def self.notify_ios(text, data = nil)
