@@ -16,7 +16,7 @@ class MessagesController < ApplicationController
 			end
 			data = { notification: {
 				body: @message.text,
-				title: "wubbalubbadubdub",
+				title: chat.title,
 				icon: "myicon"
 				}}
 			Chat.notify(data)
