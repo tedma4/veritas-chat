@@ -17,8 +17,10 @@ class MessagesController < ApplicationController
 			data = { notification: {
 				body: @message.text,
 				title: chat.title,
-				icon: "myicon"
-				}}
+				smallicon: "small_not_icon"
+				},
+				smallicon: "small_not_icon"
+			}
 			Chat.notify(data)
 			user_data = Chat.get_user_data [@message.user_id]
 			@message = @message.build_message_hash
