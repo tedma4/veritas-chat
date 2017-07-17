@@ -114,10 +114,10 @@ class Chat
 		end
 	end
   
-  def self.notify_android(data, collapse_key = nil)
+  def self.notify(data, collapse_key = nil)
     require 'fcm'
     fcm = FCM.new(ENV['fcm_api_key']) # an api key from prerequisites
-    registration_ids= Device.android.map(&:registration_id) # an array of one or more client registration IDs
+    registration_ids = Device.android.map(&:registration_id) # an array of one or more client registration IDs
     options = {
       data: data,
       collapse_key: collapse_key || 'my_app'

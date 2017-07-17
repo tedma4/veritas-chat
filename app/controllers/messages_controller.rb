@@ -9,11 +9,13 @@ class MessagesController < ApplicationController
 			@message.message_type = "image"
 		end
 		if @message.save
-			if @message.content && !@message.content.blank?
 				chat = @message.chat 
+			if @message.content && !@message.content.blank?
 				chat.cover = @message.content
 				chat.save
 			end
+
+			chat.notify({notification: @message.build_message_hash})
 			user_data = Chat.get_user_data [@message.user_id]
 			@message = @message.build_message_hash
 			@message[:user] = user_data[0][:"#{@message[:user_id]}"] if user_data.count == 1
