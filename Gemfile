@@ -26,6 +26,8 @@ gem 'mongoid-geospatial', git: "https://github.com/tedma4/mongoid-geospatial", r
 gem 'rgeo', '0.6.0'
 gem 'faker', '1.7.3'
 gem 'figaro'
+gem 'houston'
+gem 'fcm'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

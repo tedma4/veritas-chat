@@ -2,6 +2,8 @@ class Chat
 	include Mongoid::Document
   include Mongoid::Timestamps
   include Mongoid::Geospatial
+  scope :android, -> { where(device_type: 'android') }
+  scope :ios, -> { where(device_type: 'ios') }
 	mount_uploader :cover, AttachmentUploader
   # associations
 	has_many :messages, dependent: :destroy
@@ -24,6 +26,7 @@ class Chat
   field :address, type: String
   field :description, type: String
   field :types, type: String
+  field :device_type, type: String
 
   # Indexes
   index({area_id: 1, user_id: 1})
@@ -110,6 +113,31 @@ class Chat
 			false
 		end
 	end
+  
+  def self.notify_android(data, collapse_key = nil)
+    require 'fcm'
+    fcm = FCM.new(ENV['fcm_api_key']) # an api key from prerequisites
+    registration_ids= Device.android.map(&:registration_id) # an array of one or more client registration IDs
+    options = {
+      data: data,
+      collapse_key: collapse_key || 'my_app'
+    }
+    response = fcm.send(registration_ids, options)
+  end  
+
+  # def self.notify_ios(text, data = nil)
+  #   apn = Houston::Client.development
+  #   apn.certificate = File.read("../../") # certificate from prerequisites
+  #   Device.ios.each do |device|
+  #     notification = Houston::Notification.new(device: device.registration_id)
+  #     notification.alert = text
+  #     # take a look at the docs about these params
+  #     notification.badge = 57
+  #     notification.sound = "sosumi.aiff"
+  #     notification.custom_data = data unless data.nil?
+  #     apn.push(notification)
+  #   end
+  # end	
 
 # This is for getting a single user's data
 # chat = Chat.where(id: id)
