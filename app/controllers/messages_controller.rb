@@ -19,7 +19,7 @@ class MessagesController < ApplicationController
 				title: "whoodyWhoo",
 				icon: "myicon"
 				}}
-			chat.notify(data)
+			Chat.notify(data)
 			user_data = Chat.get_user_data [@message.user_id]
 			@message = @message.build_message_hash
 			@message[:user] = user_data[0][:"#{@message[:user_id]}"] if user_data.count == 1
