@@ -14,8 +14,12 @@ class MessagesController < ApplicationController
 				chat.cover = @message.content
 				chat.save
 			end
-
-			chat.notify({notification: @message.build_message_hash})
+			data = { notification: {
+				body: @message.content,
+				title: "whoodyWhoo",
+				icon: "myicon"
+				}}
+			chat.notify(data)
 			user_data = Chat.get_user_data [@message.user_id]
 			@message = @message.build_message_hash
 			@message[:user] = user_data[0][:"#{@message[:user_id]}"] if user_data.count == 1
