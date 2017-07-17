@@ -17,9 +17,9 @@ class MessagesController < ApplicationController
 			data = { notification: {
 				body: @message.text,
 				title: chat.title,
-				smallicon: "small_not_icon"
-				},
-				smallicon: "small_not_icon"
+				icon: "small_not_icon",
+				color: '#00eebc'
+				}
 			}
 			Chat.notify(data)
 			user_data = Chat.get_user_data [@message.user_id]
